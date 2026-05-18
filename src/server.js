@@ -6,7 +6,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import authRoutes from './routes/auth.routes.js';
 
 const app = express(); //pour utiliser express
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json()); //lis les données JSON

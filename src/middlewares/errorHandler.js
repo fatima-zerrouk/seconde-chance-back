@@ -10,7 +10,7 @@ const errorHandler = (err, req, res, next) => {
       message: err.message,
     });
   }
-  // sinon erreur inconnue ou serveur
+  // sinon erreur inconnue ou serveur erreur 500
   console.error(err.stack); //affiche dans la console
   res.status(500).json({
     message: 'Erreur serveur interne',
