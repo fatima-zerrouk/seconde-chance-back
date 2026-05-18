@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import 'dotenv/config';
+// import 'dotenv/config';
 
 // pool de connexion permet de gérer plusieurs connexions à la bdd
 const pool = mysql.createPool({
