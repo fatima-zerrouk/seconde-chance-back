@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import AppError from '../errors/AppError';
+import AppError from '../errors/AppError.js';
 
 // Vérifie qui est l'utilisateur et si JWT est valide
 export const authenticate = (req, res, next) => {
