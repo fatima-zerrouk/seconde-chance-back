@@ -15,6 +15,5 @@ router.post(
   validate,
   AnimalController.createAnimal
 );
-//faire une routes breeds
 
 export default router;
