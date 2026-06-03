@@ -56,6 +56,11 @@ export const validateAnimal = [
     .isInt({ min: 1 })
     .withMessage("L'espèce sélectionnée n’est pas valide")
     .toInt(),
+  body('url')
+    .notEmpty()
+    .withMessage("Il faut une photo de l'animal miniumum")
+    .isURL()
+    .withMessage("L'url de l'image n'est pas au bon format'"),
 ];
 
 export const validateAnimalId = [

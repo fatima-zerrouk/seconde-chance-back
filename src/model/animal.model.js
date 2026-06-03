@@ -35,3 +35,45 @@ export const create = async ({
   ]);
   return result.insertId;
 };
+
+// export const createAnimalWithPicture = async animalData => {
+//   const {
+//     name,
+//     gender,
+//     age,
+//     size,
+//     description,
+//     status,
+//     is_visible = 1,
+//     id_breed,
+//     image_url,
+//   } = animalData;
+//   // insère d'abord l'animal dans la table
+//   const queryAnimal = `
+//     INSERT INTO animals (name, gender, age, size, description, status, is_visible, id_breed) 
+//     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+//   `;
+//   const [resultAnimal] = await pool.execute(queryAnimal, [
+//     name,
+//     gender,
+//     age,
+//     size,
+//     description,
+//     status,
+//     is_visible,
+//     id_breed,
+//   ]);
+//   // récupère l'ID que MySQL vient de créer automatiquement
+//   const newAnimalId = resultAnimal.insertId;
+
+//   // insertion de l'URL dans la table animals_pictures
+//   const queryPicture = `
+//     INSERT INTO animals_pictures (url, id_animal) 
+//     VALUES (?, ?)
+//   `;
+
+//   await pool.execute(queryPicture, [image_url, newAnimalId]);
+
+//   // retourne l'ID de l'animal créé
+//   return newAnimalId;
+// };
