@@ -56,11 +56,17 @@ export const validateAnimal = [
     .isInt({ min: 1 })
     .withMessage("L'espèce sélectionnée n’est pas valide")
     .toInt(),
-  body('url')
-    .notEmpty()
-    .withMessage("Il faut une photo de l'animal miniumum")
+  // body('url')
+  //   .notEmpty()
+  //   .withMessage("Il faut une photo de l'animal minium")
+  //   .isURL()
+  //   .withMessage("L'url de l'image n'est pas au bon format'"),
+  body('urls')
+    .isArray({ min: 1, max: 3 })
+    .withMessage("Il faut entre 1 et 3 photos de l'animal"),
+  body('urls.*') // Valide chaque élément à l'intérieur du tableau
     .isURL()
-    .withMessage("L'url de l'image n'est pas au bon format'"),
+    .withMessage("L'une des URL des images n'est pas au bon format"),
 ];
 
 export const validateAnimalId = [

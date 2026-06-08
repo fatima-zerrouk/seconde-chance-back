@@ -1,34 +1,36 @@
 import * as AnimalServices from '../services/animal.services.js';
-import * as AnimalModel from '../model/animal.model.js';
+import * as uploadHelper from '../middlewares/upload.middlware.js';
 
-export const createAnimal = async (req, res) => {
-  const { name, gender, age, size, description, status, is_visible, id_breed } =
-    req.body;
+// Création de l'animal complet
+export const createAnimal = async (req, res, next) => {
+  try {
+    // req.body contient : { name, gender, age, size, description, status, is_visible, id_breed, url }
+    const animal = await AnimalServices.createAnimal(req.body);
 
-  const animal = await AnimalServices.createAnimal({
-    name,
-    gender,
-    age,
-    size,
-    description,
-    status,
-    is_visible,
-    id_breed,
-  });
-  return res.status(201).json(animal);
+    // Renvoie l'animal créé au Front avec un statut 201
+    return res.status(201).json(animal);
+  } catch (error) {
+    console.error("Erreur lors de la création de l'animal:", error);
+    next(error);
+  }
 };
 
-// export const addAnimal = async (req, res, next) => {
-//   try {
-//     // req.body contient : { name, age, ..., image_url: "https://..." }
-//     const newAnimalId = await AnimalModel.createAnimalWithPicture(req.body);
+//  Upload de l'image seule vers Cloudinary (Appelé en premier par le Drag & Drop)
+export const uploadImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Le serveur n'a reçu aucun fichier sous la clé 'image'.",
+      });
+    }
 
-//     return res.status(201).json({
-//       success: true,
-//       message: 'Animal et photo enregistrés avec succès !',
-//       animalId: newAnimalId,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+    // Envoi du buffer à Cloudinary
+    const imageUrl = await uploadHelper.uploadToCloudinary(req.file.buffer);
+
+    // Renvoie l'URL générée au Front
+    return res.status(200).json({ url: imageUrl });
+  } catch (error) {
+    console.error('Erreur dans uploadImage:', error);
+    next(error);
+  }
+};
