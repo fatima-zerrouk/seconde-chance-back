@@ -7,12 +7,12 @@ import validate from '../middlewares/validate.middleware.js';
 import { uploadMiddleware } from '../middlewares/upload.middlware.js';
 
 const router = Router();
-// VERSION 3
+
 router.post(
   '/upload',
   authenticate,
   authorizeRoles('admin'),
-  uploadMiddleware.single('image'),
+  uploadMiddleware,
   AnimalController.uploadImage
 );
 

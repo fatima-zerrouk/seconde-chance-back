@@ -1,34 +1,67 @@
-// VERSION 3
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
+import AppError from '../errors/AppError.js';
+// Le middlware vérifie les fichiers avant le contrôleur
 
-// Stockage temporaire en mémoire vive (RAM)
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); //Multer garde temporairement le fichier puis l'envoi à cloudinary
 
-// Filtre de validation (JPG, PNG, WEBP, 5Mo max)
+// Vérifie le format du fichier
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
   if (!allowedMimeTypes.includes(file.mimetype)) {
-    const error = new Error('Format invalide. Autorisé : JPG, PNG, WEBP');
-    error.status = 400;
+    // Erreur de format transmise à Multer
+    const error = new Error('Format invalide. Autorisé : JPG, PNG, WEBP back');
+    error.code = 'LIMIT_FILE_TYPES';
     return cb(error, false);
   }
   cb(null, true);
 };
 
-export const uploadMiddleware = multer({
+// Crée l'instance Multer en local temporairement
+const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 Mo maximum
   fileFilter,
-});
+}).single('image'); // Attend la clé 'image' du formData en front
 
-// Fonction utilitaire d'envoi vers Cloudinary avec OPTIMISATION AUTOMATIQUE
+// Middleware qu'Express va exécuter vérifie taille/format
+export const uploadMiddleware = (req, res, next) => {
+  upload(req, res, err => {
+    // Si Multer a rencontré une erreur pendant l'analyse du fichier
+    if (err) {
+      // Attrape le code de taille de Multer
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return next(
+          new AppError('Fichier trop lourd (5 Mo maximum) back', 400)
+        );
+      }
+
+      // Si c'est l'erreur de format venant de fileFilter
+      if (err.code === 'LIMIT_FILE_TYPES') {
+        return next(new AppError(err.message, 400));
+      }
+
+      // Pour toute autre erreur inconnue de Multer
+      return next(new AppError(err.message, 400));
+    }
+
+    // Vérifie qu'un fichier existe
+    if (!req.file) {
+      return next(new AppError('Aucun fichier reçu back', 400));
+    }
+
+    // Tout est ok, passe au contrôleur
+    next();
+  });
+};
+
+// Fonction d'envoi vers Cloudinary avec optimisation automatique
 export const uploadToCloudinary = fileBuffer => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: 'seconde-chance', // Nom du dossier Cloudinary
-        transformation: [{ quality: 'auto', fetch_format: 'auto' }], // Optimisation
+        transformation: [{ quality: 'auto', fetch_format: 'auto' }], // Optimisation choisit automatiquement meilleure qualité/format
       },
       (error, result) => {
         if (error) return reject(error);

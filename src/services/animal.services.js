@@ -1,10 +1,10 @@
 import * as AnimalModel from '../model/animal.model.js';
+//Le service gère la logique métier, il fait le lien entre le controller et le model
 
 export const createAnimal = async data => {
-  // Appelle la méthode avec la transaction (animal et photo)
-  // data contient toutes les infos et .url
+  // Demande au Model de créer l'animal et ses photos
   const id = await AnimalModel.createWithPicture(data);
 
-  // Cherche l'animal tout juste créé pour le renvoyer complet
+  // Récupère l'animal complet
   return await AnimalModel.findById(id);
 };
