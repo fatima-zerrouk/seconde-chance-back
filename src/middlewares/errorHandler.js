@@ -11,18 +11,6 @@ const errorHandler = (err, req, res, next) => {
       message: err.message,
     });
   }
-  // // VERSION 2 KITI gestion multer error (pourquoi mettre errer personaliser ici ai lieu de upload )
-  // if (err instanceof multer.MulterError) {
-
-  //   if (err.code === 'LIMIT_FILE_SIZE') {
-
-  //     return res.status(400).json({
-  //       message: 'Fichier trop lourd (5 Mo maximum)',
-  //     });
-
-  //   }
-
-  // }
   // sinon erreur inconnue ou serveur erreur 500
   console.error(err.stack); //affiche dans la console
   res.status(500).json({
