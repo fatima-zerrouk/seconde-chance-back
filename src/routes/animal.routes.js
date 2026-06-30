@@ -25,4 +25,11 @@ router.post(
   AnimalController.createAnimal
 );
 
+router.get(
+  '/:id',
+  authenticate,
+  authorizeRoles('admin'),
+  AnimalController.getAnimalById
+);
+
 export default router;

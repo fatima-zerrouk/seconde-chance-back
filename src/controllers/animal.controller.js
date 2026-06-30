@@ -30,3 +30,21 @@ export const uploadImage = async (req, res, next) => {
     next(error);
   }
 };
+
+// Récupération d'un animal par son ID
+export const getAnimalById = async (req, res, next) => {
+  try {
+    const {id} = req.params; // Récupère l'id de l'animal depuis les paramètres de la requête l'URL (ex: /api/animals/42)
+    const animal = await AnimalServices.getAnimalById(id); // Appelle le service pour récupérer l'animal
+
+    if (!animal) {
+      // Si l'animal n'existe pas, renvoie une erreur 404
+      return res.status(404).json({ message: 'Animal non trouvé' });
+    }
+    return res.status(200).json(animal); // Renvoie l'animal trouvé avec un statut 200
+  } catch (error) { //
+    console.error('Erreur lors de la récupération de l\'animal', error); // Log l'erreur
+    next(error); // Transmet l'erreur au middleware errorHandler pour une gestion centralisée
+  }
+}
+

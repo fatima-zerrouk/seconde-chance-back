@@ -8,3 +8,8 @@ export const createAnimal = async data => {
   // Récupère l'animal complet
   return await AnimalModel.findById(id);
 };
+
+// Récupére un animal
+export const getAnimalById = async id => {
+  return await AnimalModel.findById(id);
+};
