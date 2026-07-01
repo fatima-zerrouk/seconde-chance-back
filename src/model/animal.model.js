@@ -67,3 +67,74 @@ export const createWithPicture = async ({
     connection.release();
   }
 };
+
+// Met à jour un animal et ses photos
+export const updateWithPicture = async (
+  id,
+  {
+    // Récupère les données de l'animal et ses photos
+    name,
+    gender,
+    age,
+    size,
+    description,
+    status,
+    is_visible,
+    id_breed,
+    urls,
+  }
+) => {
+  const connection = await pool.getConnection(); // Récupère une connexion à la base de données
+
+  try {
+    await connection.beginTransaction(); // Démarre une transaction pour s'assurer que toutes les opérations sont atomiques
+
+    // Requête SQL pour mettre à jour les infos principales de l'animal
+    const sqlAnimal = `
+      UPDATE animals 
+      SET name = ?, gender = ?, age = ?, size = ?, description = ?, status = ?, is_visible = ?, id_breed = ?
+      WHERE id = ?
+    `;
+    await connection.execute(sqlAnimal, [
+      // Exécute la mise à jour avec les nouvelles valeurs
+      name,
+      gender,
+      age,
+      size,
+      description,
+      status,
+      is_visible,
+      id_breed,
+      id,
+    ]);
+
+    // Gestion des photos nettoie les anciennes photos de cet animal
+    await connection.execute(
+      'DELETE FROM animals_pictures WHERE id_animal = ?',
+      [id]
+    ); //
+
+    // Insère les nouvelles photos présentes dans le formulaire
+    const activeUrls = urls
+      ? urls.filter(url => url !== undefined && url !== null)
+      : []; // Filtre les URLs valides pour pas insérer des valeurs nulles ou indéfinies
+
+    if (activeUrls.length > 0) {
+      // Si il y a des URLs valides, insère les dans la table animals_pictures
+      const sqlPicture =
+        'INSERT INTO animals_pictures (url, id_animal) VALUES (?, ?)';
+      for (const url of activeUrls) {
+        // Parcourt chaque URL valide et l'insère dans la table avec l'id de l'animal
+        await connection.execute(sqlPicture, [url, id]); // Associe chaque photo à l'animal
+      }
+    }
+
+    await connection.commit(); // Valide toutes les modifications
+    return true;
+  } catch (error) {
+    await connection.rollback(); // Annule toutes les modifications si une erreur
+    throw error;
+  } finally {
+    connection.release(); // Libère la connexion
+  }
+};

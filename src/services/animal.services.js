@@ -13,3 +13,12 @@ export const createAnimal = async data => {
 export const getAnimalById = async id => {
   return await AnimalModel.findById(id);
 };
+
+// Service pour modifier un animal
+export const updateAnimal = async (id, data) => {
+  // Demande au Model de mettre à jour l'animal et ses photos
+  await AnimalModel.updateWithPicture(id, data);
+
+  // Récupère l'animal mis à jour pour le renvoyer au controller
+  return await AnimalModel.findById(id);
+};

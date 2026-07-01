@@ -32,4 +32,12 @@ router.get(
   AnimalController.getAnimalById
 );
 
+router.put(
+  '/:id',
+  authenticate,
+  authorizeRoles('admin'),
+  AnimalValidator.validateAnimal,
+  validate,
+  AnimalController.updateAnimal
+);
 export default router;
