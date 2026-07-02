@@ -2,9 +2,21 @@ import pool from '../config/db.js';
 
 // fonction qui trouve un animal
 export const findById = async id => {
-  const [rows] = await pool.execute('SELECT * FROM animals WHERE id = ?', [id]);
+  const [animalRows] = await pool.execute(
+    'SELECT * FROM animals WHERE id = ?',
+    [id]
+  );
 
-  return rows[0] ?? null;
+  if (animalRows.length === 0) return null; // Si l'animal n'existe pas, arrête tout
+  const animal = animalRows[0];
+
+  const [pictureRows] = await pool.execute(
+    'SELECT url FROM animals_pictures WHERE id_animal = ?',
+    [id]
+  );
+  animal.urls = pictureRows.map(row => row.url);
+
+  return animal;
 };
 
 export const createWithPicture = async ({
