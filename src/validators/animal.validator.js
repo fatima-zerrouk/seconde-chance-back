@@ -58,8 +58,19 @@ export const validateAnimal = [
     .toInt(),
   body('urls')
     .isArray({ min: 1, max: 3 })
-    .withMessage("Il faut entre 1 et 3 photos de l'animal"),
+    .withMessage("Il faut entre 1 et 3 photos de l'animal")
+    .custom(value => {
+      // Garde que les vraies chaînes de caractères (vire null, undefined, "")
+      const trueImages = value ? value.filter(Boolean) : [];
+
+      // Si après filtrage il n'y a plus aucune image, envoie erreur
+      if (trueImages.length < 1) {
+        throw new Error("Il faut au moins une photo de l'animal");
+      }
+      return true;
+    }),
   body('urls.*') // Valide chaque élément à l'intérieur du tableau
+    .optional({ values: 'falsy' }) // Si url null ou undefind, parce que pas d'url ne lance pas d'erreur
     .isURL()
     .withMessage("L'une des URL des images n'est pas au bon format"),
 ];
