@@ -11,7 +11,7 @@ export const createAnimal = async (data) => {
   }
   return animal;
 };
-
+ 
 // Récupération d'un animal
 export const getAnimalById = async (id) => {
   

@@ -7,7 +7,7 @@ export const createAnimal = async (req, res) => {
   const animal = await AnimalServices.createAnimal(req.body);
   return res.status(201).json(animal);
 };
-
+ 
 // Upload de l'image seule vers Cloudinary (drag & drop)
 export const uploadImage = async (req, res) => {
   const imageUrl = await uploadHelper.uploadToCloudinary(req.file.buffer);
