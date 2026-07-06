@@ -1,5 +1,38 @@
 import pool from '../config/db.js';
 
+export const findAll = async ({ page = 1, limit = 10, search = '' }) => {
+  // Desctructuration et valeurs par défaut
+  const offset = (page - 1) * limit;
+  const searchName = `%${search}%`; // % signifie "n'importe quel texte, ou rien du tout
+
+  // Requête pour récupérer les 10 animaux de la page (cahnge pour 9 comme ça je l'utilise pour catalogue aussi)
+  const sqlData = `
+    SELECT * FROM animals 
+    WHERE name LIKE ? 
+    LIMIT ? OFFSET ?
+  `;
+  // Remplace les ? dans l'ordre par les valeurs du tableau
+  const [animals] = await pool.execute(sqlData, [
+    searchName,
+    String(limit),
+    String(offset),
+  ]);
+
+  // Requête pour compter le total (sans LIMIT ni OFFSET )
+  const sqlCount = `
+    SELECT COUNT(*) AS total FROM animals 
+    WHERE name LIKE ?
+  `;
+  const [countRows] = await pool.execute(sqlCount, [searchName]);
+  const total = countRows[0].total; // Récupère le premièr résultat de l'index et extrait le total
+
+  // Renvoie un objet contenant les deux infos
+  return {
+    animals,
+    total,
+  };
+};
+
 // fonction qui trouve un animal
 export const findById = async id => {
   const [animalRows] = await pool.execute(

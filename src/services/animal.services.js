@@ -1,6 +1,14 @@
 import * as AnimalModel from '../model/animal.model.js';
 import AppError from '../errors/AppError.js';
 
+export const getAllAnimals = async ({ page, limit, search }) => {
+  const { animals, total } = await AnimalModel.findAll({ page, limit, search });
+  return {
+    animals,
+    total,
+  };
+};
+
 // Création de l'animal
 export const createAnimal = async data => {
   const id = await AnimalModel.createWithPicture(data);
