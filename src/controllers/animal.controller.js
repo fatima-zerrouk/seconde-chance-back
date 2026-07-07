@@ -10,7 +10,7 @@ export const getAllAnimals = async (req, res) => {
   // Force la conversion en nombres pour page et limit évite les bugs car req.query donne toujours des chaînes de caractères (strings)
   const result = await AnimalServices.getAllAnimals({
     page: page ? parseInt(page) : 1,
-    limit: limit ? parseInt(limit) : 10,
+    limit: limit ? parseInt(limit) : 9,
     search: search || '',
   });
 

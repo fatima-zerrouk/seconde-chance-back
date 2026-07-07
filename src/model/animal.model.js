@@ -1,16 +1,21 @@
 import pool from '../config/db.js';
 
-export const findAll = async ({ page = 1, limit = 10, search = '' }) => {
+export const findAll = async ({ page = 1, limit = 9, search = '' }) => {
   // Desctructuration et valeurs par défaut
   const offset = (page - 1) * limit;
   const searchName = `%${search}%`; // % signifie "n'importe quel texte, ou rien du tout
-
-  // Requête pour récupérer les 10 animaux de la page (cahnge pour 9 comme ça je l'utilise pour catalogue aussi)
+  // Jointure entre race et espèces pour récupérer les espèces
   const sqlData = `
-    SELECT * FROM animals 
-    WHERE name LIKE ? 
-    LIMIT ? OFFSET ?
-  `;
+  SELECT 
+  animals.*, 
+  species.name AS specie_name,
+  (SELECT url FROM animals_pictures WHERE id_animal = animals.id LIMIT 1) AS picture_url
+  FROM animals
+  INNER JOIN breeds ON animals.id_breed = breeds.id
+  INNER JOIN species ON breeds.id_specie = species.id
+  WHERE animals.name LIKE ? 
+  LIMIT ? OFFSET ?
+`;
   // Remplace les ? dans l'ordre par les valeurs du tableau
   const [animals] = await pool.execute(sqlData, [
     searchName,
