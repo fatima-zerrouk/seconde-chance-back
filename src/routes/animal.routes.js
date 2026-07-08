@@ -8,6 +8,13 @@ import { uploadMiddleware } from '../middlewares/upload.middlware.js';
 
 const router = Router();
 
+router.get(
+  '/',
+  authenticate,
+  authorizeRoles('admin'),
+  AnimalController.getAllAnimals
+);
+
 router.post(
   '/upload',
   authenticate,

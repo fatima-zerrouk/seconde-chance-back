@@ -1,5 +1,44 @@
 import pool from '../config/db.js';
 
+export const findAll = async ({ page = 1, limit = 9, search = '' }) => {
+  // Desctructuration et valeurs par défaut
+  const offset = (page - 1) * limit;
+  const searchName = `%${search}%`; // % signifie "n'importe quel texte, ou rien du tout
+  // Jointure entre race et espèces pour récupérer les espèces et sous req sql pour les images évite de faire 11 req
+  const sqlData = `
+  SELECT 
+  animals.*, 
+  species.name AS specie_name,
+  (SELECT url FROM animals_pictures WHERE id_animal = animals.id LIMIT 1) AS picture_url
+  FROM animals
+  INNER JOIN breeds ON animals.id_breed = breeds.id
+  INNER JOIN species ON breeds.id_specie = species.id
+  WHERE animals.name LIKE ? 
+  ORDER BY animals.created_at DESC
+  LIMIT ? OFFSET ?
+`;
+  // Remplace les ? dans l'ordre par les valeurs du tableau
+  const [animals] = await pool.execute(sqlData, [
+    searchName,
+    String(limit),
+    String(offset),
+  ]);
+
+  // Requête pour compter le total (sans LIMIT ni OFFSET )
+  const sqlCount = `
+    SELECT COUNT(*) AS total FROM animals 
+    WHERE name LIKE ?
+  `;
+  const [countRows] = await pool.execute(sqlCount, [searchName]);
+  const total = countRows[0].total; // Récupère le premièr résultat de l'index et extrait le total
+
+  // Renvoie un objet contenant les deux infos
+  return {
+    animals,
+    total,
+  };
+};
+
 // fonction qui trouve un animal
 export const findById = async id => {
   const [animalRows] = await pool.execute(
