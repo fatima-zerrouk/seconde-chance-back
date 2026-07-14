@@ -37,12 +37,6 @@ export const validateAnimal = [
     .isLength({ min: 10, max: 500 })
     .withMessage('La description doit contenir au minimum 10 à 500 caractères'),
 
-  body('status')
-    .notEmpty()
-    .withMessage('Le status est requis')
-    .isIn(['available', 'in_progress', 'adopted'])
-    .withMessage('Le status doit être disponible, en cours ou adopté'),
-
   body('id_breed')
     .notEmpty()
     .withMessage('La race est requise')

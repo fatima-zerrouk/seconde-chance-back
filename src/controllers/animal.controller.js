@@ -44,3 +44,10 @@ export const updateAnimal = async (req, res) => {
   const updatedAnimal = await AnimalServices.updateAnimal(id, req.body);
   return res.status(200).json(updatedAnimal);
 };
+
+export const updateAnimalStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const updateAnimal = await AnimalServices.updateAnimalStatus(id, status);
+  return res.status(200).json(updateAnimal);
+};

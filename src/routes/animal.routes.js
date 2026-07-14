@@ -5,6 +5,7 @@ import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/authorize.middleware.js';
 import validate from '../middlewares/validate.middleware.js';
 import { uploadMiddleware } from '../middlewares/upload.middlware.js';
+import { statusValidate } from '../validators/status.validator.js';
 
 const router = Router();
 
@@ -15,6 +16,14 @@ router.get(
   AnimalController.getAllAnimals
 );
 
+router.patch(
+  '/:id/status',
+  authenticate,
+  authorizeRoles('admin'),
+  statusValidate,
+  validate,
+  AnimalController.updateAnimalStatus
+);
 router.post(
   '/upload',
   authenticate,
