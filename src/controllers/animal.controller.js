@@ -51,3 +51,9 @@ export const updateAnimalStatus = async (req, res) => {
   const updateAnimal = await AnimalServices.updateAnimalStatus(id, status);
   return res.status(200).json(updateAnimal);
 };
+
+export const deleteAnimal = async (req, res) => {
+  const { id } = req.params;
+  await AnimalServices.remove(id);
+  return res.status(204).send();
+};

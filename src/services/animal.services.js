@@ -60,3 +60,17 @@ export const updateAnimalStatus = async (id, status) => {
   const updatedAnimal = await AnimalModel.findById(id);
   return updatedAnimal;
 };
+
+export const remove = async id => {
+  const existingAnimal = await AnimalModel.findById(id);
+
+  if (!existingAnimal) {
+    throw new AppError("Cet animal n'existe pas ou a déjà été supprimé", 404);
+  }
+
+  const isDeleted = await AnimalModel.remove(id);
+  if (!isDeleted) {
+    throw new AppError("La suppression n'a pas abouti", 400);
+  }
+  return;
+};

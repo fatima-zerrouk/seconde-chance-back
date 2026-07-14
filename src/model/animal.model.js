@@ -195,3 +195,8 @@ export const updateStatus = async (id, status) => {
   const [result] = await pool.execute(sql, [status, id]);
   return result.affectedRows;
 };
+
+export const remove = async id => {
+  const [result] = await pool.execute('DELETE FROM animals WHERE id = ?', [id]);
+  return result.affectedRows === 1;
+};
