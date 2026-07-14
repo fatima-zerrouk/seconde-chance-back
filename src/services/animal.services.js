@@ -48,3 +48,15 @@ export const updateAnimal = async (id, data) => {
   // Récupère et renvoie l'animal mis à jour
   return await AnimalModel.findById(id);
 };
+
+export const updateAnimalStatus = async (id, status) => {
+  // Tente la mise à jour en BDD
+  const affectedRows = await AnimalModel.updateStatus(id, status);
+  // Si aucune ligne n'a été modifiée, c'est que l'ID n'existe pas
+  if (affectedRows === 0) {
+    throw new AppError("Cet animal n'existe pas", 404);
+  }
+  // Si ça marche, récupère l'animal mis à jour
+  const updatedAnimal = await AnimalModel.findById(id);
+  return updatedAnimal;
+};

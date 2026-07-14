@@ -189,3 +189,9 @@ export const updateWithPicture = async (
     connection.release(); // Libère la connexion
   }
 };
+
+export const updateStatus = async (id, status) => {
+  const sql = 'UPDATE animals SET status = ? WHERE id = ?';
+  const [result] = await pool.execute(sql, [status, id]);
+  return result.affectedRows;
+};
