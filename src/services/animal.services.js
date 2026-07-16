@@ -9,7 +9,6 @@ export const getAllAnimals = async ({ page, limit, search }) => {
   };
 };
 
-// Création de l'animal
 export const createAnimal = async data => {
   const id = await AnimalModel.createWithPicture(data);
   const animal = await AnimalModel.findById(id);
@@ -23,10 +22,8 @@ export const createAnimal = async data => {
   return animal;
 };
 
-// Récupération d'un animal
 export const getAnimalById = async id => {
   const animal = await AnimalModel.findById(id);
-
   // Si le modèle renvoie null, c'est que l'ID n'existe pas
   if (!animal) {
     throw new AppError("Cet animal n'existe pas ou a été supprimé", 404);
@@ -34,7 +31,6 @@ export const getAnimalById = async id => {
   return animal;
 };
 
-// Modification d'un animal
 export const updateAnimal = async (id, data) => {
   // Vérifie si l'animal existe avant de lancer l'update SQL
   const animalExists = await AnimalModel.findById(id);

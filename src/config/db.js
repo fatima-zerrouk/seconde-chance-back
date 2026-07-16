@@ -1,5 +1,4 @@
 import mysql from 'mysql2/promise';
-// import 'dotenv/config';
 
 // pool de connexion permet de gérer plusieurs connexions à la bdd
 const pool = mysql.createPool({
@@ -7,16 +6,17 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  ssl: { rejectUnauthorized: false },
 });
 
-// TESTE CONNECTION
+// Test connexion
 try {
-  const connection = await pool.getConnection(); //récupère une connexion depuis le pool
-  console.log('Connexion à la base de données réussie'); // si ça marche
+  const connection = await pool.getConnection();
+  ('Connexion à la base de données réussie');
 
-  connection.release(); // sinon libère la connexion pour pzs bloquer le pool
+  connection.release();
 } catch (error) {
-  // attrape l'erreur
   console.error('Erreur de connexion à la base de données :', error.message);
 }
 

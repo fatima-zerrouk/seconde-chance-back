@@ -5,7 +5,7 @@ export const validateAnimal = [
     .trim() //supprime les espaces inutiles début et fin
     .notEmpty()
     .withMessage('Le nom est requis')
-    .matches(/^[a-zA-ZàâäéèêëîïôöùûüçÉÀÂÄÈÊËÎÏÔÖÙÛÜÇ\s-]+$/) //lettres min et maj, les accents, les tirets (-) et les espaces (\s)
+    .matches(/^[a-zA-ZàâäéèêëîïôöùûüçÉÀÂÄÈÊËÎÏÔÖÙÛÜÇ\s-]+$/)
     .withMessage(
       'Le nom ne doit contenir que des lettres, des tirets ou des espaces'
     )
@@ -16,7 +16,7 @@ export const validateAnimal = [
     .notEmpty()
     .withMessage('Le genre est requis')
     .isIn(['male', 'female'])
-    .withMessage('Le genre doit être masculin ou féminin'), //isIN() permet de vérifier que la donnée fait partie d'une liste précise de valeurs autorisées
+    .withMessage('Le genre doit être masculin ou féminin'),
 
   body('age')
     .isInt({ min: 0 })
@@ -54,7 +54,7 @@ export const validateAnimal = [
     .isArray({ min: 1, max: 3 })
     .withMessage("Il faut entre 1 et 3 photos de l'animal")
     .custom(value => {
-      // Garde que les vraies chaînes de caractères (vire null, undefined, "")
+      // Garde que les vraies chaînes de caractères (enlève null, undefined, "")
       const trueImages = value ? value.filter(Boolean) : [];
 
       // Si après filtrage il n'y a plus aucune image, envoie erreur
@@ -63,8 +63,8 @@ export const validateAnimal = [
       }
       return true;
     }),
-  body('urls.*') // Valide chaque élément à l'intérieur du tableau
-    .optional({ values: 'falsy' }) // Si url null ou undefind, parce que pas d'url ne lance pas d'erreur
+  body('urls.*')
+    .optional({ values: 'falsy' })
     .isURL()
     .withMessage("L'une des URL des images n'est pas au bon format"),
 ];

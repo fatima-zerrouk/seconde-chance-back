@@ -25,7 +25,6 @@ router.patch(
   AnimalController.updateAnimalStatus
 );
 router.post(
-  //faut il mettre validate
   '/upload',
   authenticate,
   authorizeRoles('admin'),
@@ -59,7 +58,6 @@ router.put(
 );
 
 router.delete(
-  // je met validate?
   '/:id',
   authenticate,
   authorizeRoles('admin'),
