@@ -1,11 +1,10 @@
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import AppError from '../errors/AppError.js';
-// Le middlware vérifie les fichiers avant le contrôleur
 
 const storage = multer.memoryStorage(); //Multer garde temporairement le fichier puis l'envoi à cloudinary
 
-// Vérifie le format du fichier
+// Filtre le format
 const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
   if (!allowedMimeTypes.includes(file.mimetype)) {
@@ -20,20 +19,18 @@ const fileFilter = (req, file, cb) => {
 // Crée l'instance Multer en local temporairement
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 Mo maximum
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter,
 }).single('image'); // Attend la clé 'image' du formData en front
 
-// Middleware qu'Express va exécuter vérifie taille/format
+// Vérifie taille/format
 export const uploadMiddleware = (req, res, next) => {
   upload(req, res, err => {
     // Si Multer a rencontré une erreur pendant l'analyse du fichier
     if (err) {
       // Attrape le code de taille de Multer
       if (err.code === 'LIMIT_FILE_SIZE') {
-        return next(
-          new AppError('Fichier trop lourd (5 Mo maximum) back', 400)
-        );
+        return next(new AppError('Fichier trop lourd (5 Mo maximum)', 400));
       }
 
       // Si c'est l'erreur de format venant de fileFilter
@@ -47,10 +44,9 @@ export const uploadMiddleware = (req, res, next) => {
 
     // Vérifie qu'un fichier existe
     if (!req.file) {
-      return next(new AppError('Aucun fichier reçu back', 400));
+      return next(new AppError('Aucun fichier reçu', 400));
     }
 
-    // Tout est ok, passe au contrôleur
     next();
   });
 };
@@ -61,11 +57,11 @@ export const uploadToCloudinary = fileBuffer => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: 'seconde-chance', // Nom du dossier Cloudinary
-        transformation: [{ quality: 'auto', fetch_format: 'auto' }], // Optimisation choisit automatiquement meilleure qualité/format
+        transformation: [{ quality: 'auto', fetch_format: 'auto' }],
       },
       (error, result) => {
         if (error) return reject(error);
-        resolve(result.secure_url); // Retourne que l'URL sécurisée
+        resolve(result.secure_url); // Retourne l'URL sécurisée
       }
     );
     stream.end(fileBuffer);
