@@ -16,6 +16,11 @@ router.get(
   AnimalController.getAllAnimals
 );
 
+router.get(
+  '/public',
+  AnimalController.getAllAnimals
+);
+
 router.patch(
   '/:id/status',
   authenticate,
