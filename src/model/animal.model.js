@@ -1,37 +1,91 @@
 import pool from '../config/db.js';
 
-export const findAll = async ({ page = 1, limit = 9, search = '' }) => {
-  // Desctructuration et valeurs par défaut
+export const findAll = async ({
+  page = 1,
+  limit = 9,
+  search = '',
+  speciesId,
+  breedId,
+  gender,
+  ageGroup,
+}) => {
   const offset = (page - 1) * limit;
   const searchName = `%${search}%`;
-  // Jointure entre race et espèces et sous req sql pour les images
-  const sqlData = `
-  SELECT animals.*, species.name AS specie_name,
-  (SELECT url FROM animals_pictures WHERE id_animal = animals.id LIMIT 1) AS picture_url
-  FROM animals 
-  INNER JOIN breeds ON animals.id_breed = breeds.id
-  INNER JOIN species ON breeds.id_specie = species.id
-  WHERE animals.name LIKE ? ORDER BY animals.created_at DESC LIMIT ? OFFSET ?
-`;
-  const [animals] = await pool.execute(sqlData, [
-    searchName,
-    String(limit),
-    String(offset),
-  ]);
 
-  // Requête pour compter le total (sans LIMIT ni OFFSET )
-  const sqlCount = `
+  // Sépare le début de la requête et la clause WHERE commune
+  let whereClause = ` WHERE animals.name LIKE ?`;
+  const queryParams = [searchName];
+
+  // Applique les filtres une seule fois dans le tableau de paramètres
+  if (speciesId) {
+    whereClause += ` AND species.id = ?`;
+    queryParams.push(speciesId);
+  }
+  if (breedId) {
+    whereClause += ` AND breeds.id = ?`;
+    queryParams.push(breedId);
+  }
+  if (gender) {
+    whereClause += ` AND animals.gender = ?`;
+    queryParams.push(gender);
+  }
+  if (ageGroup) {
+    if (ageGroup === 'junior') {
+      whereClause += ` AND animals.age < ?`;
+      queryParams.push(2); 
+    } else if (ageGroup === 'adult') {
+      whereClause += ` AND animals.age >= ? AND animals.age <= ?`;
+      queryParams.push(2, 7); 
+    } else if (ageGroup === 'senior') {
+      whereClause += ` AND animals.age > ?`;
+      queryParams.push(7);
+    }
+  }
+
+  //REQUÊTE 1 Récupération des animaux (fusionne le SELECT, les JOIN, le WHERE et la pagination)
+  let sqlData =
+    `
+    SELECT animals.*, species.name AS specie_name, breeds.name AS breed_name,
+    (SELECT url FROM animals_pictures WHERE id_animal = animals.id LIMIT 1) AS picture_url
+    FROM animals 
+    INNER JOIN breeds ON animals.id_breed = breeds.id
+    INNER JOIN species ON breeds.id_specie = species.id
+  ` +
+    whereClause +
+    ` ORDER BY animals.created_at DESC LIMIT ? OFFSET ?`;
+
+  const animalParams = [...queryParams, String(limit), String(offset)];
+  const [animals] = await pool.execute(sqlData, animalParams);
+
+  const sqlCount =
+    `
     SELECT COUNT(*) AS total FROM animals 
-    WHERE name LIKE ?
-  `;
-  const [countRows] = await pool.execute(sqlCount, [searchName]);
-  const total = countRows[0].total; // Récupère le premièr résultat de l'index et extrait le total
+    INNER JOIN breeds ON animals.id_breed = breeds.id
+    INNER JOIN species ON breeds.id_specie = species.id
+  ` + whereClause;
 
-  // Renvoie un objet contenant les deux infos
+  const [countRows] = await pool.execute(sqlCount, queryParams);
+  const total = countRows[0].total;
+
   return {
     animals,
     total,
   };
+};
+
+export const findBySpecies = async (speciesId) => {
+  let sql = `SELECT id, name FROM breeds`;
+  const params = [];
+
+  if (speciesId) {
+    sql += ` WHERE id_specie = ?`;
+    params.push(speciesId);
+  }
+
+  sql += ` ORDER BY name ASC`;
+
+  const [rows] = await pool.execute(sql, params);
+  return rows;
 };
 
 export const findById = async id => {

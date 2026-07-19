@@ -3,16 +3,25 @@ import * as uploadHelper from '../middlewares/upload.middlware.js';
 
 // Récupérer la liste des animaux (pagination et recherche)
 export const getAllAnimals = async (req, res) => {
-  // Extrait les variables de req.query
-  const { page, limit, search } = req.query;
+  const { page, limit, search, speciesId, breedId, gender, ageGroup } =
+    req.query;
 
-  // Force la conversion en nombres page / limit
   const result = await AnimalServices.getAllAnimals({
     page: page ? parseInt(page) : 1,
     limit: limit ? parseInt(limit) : 9,
     search: search || '',
+    speciesId: speciesId || null,
+    breedId: breedId || null,
+    gender: gender || null,
+    ageGroup: ageGroup || null,
   });
   return res.status(200).json(result);
+};
+
+export const getBreedsBySpecies = async (req, res) => {
+  const { speciesId } = req.query;
+  const breeds = await AnimalServices.getBreedsBySpecies(speciesId);
+  return res.status(200).json(breeds);
 };
 
 export const createAnimal = async (req, res) => {
