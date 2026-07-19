@@ -20,6 +20,10 @@ router.get(
   '/public',
   AnimalController.getAllAnimals
 );
+router.get(
+  '/public/breeds',
+  AnimalController.getBreedsBySpecies
+);
 
 router.patch(
   '/:id/status',

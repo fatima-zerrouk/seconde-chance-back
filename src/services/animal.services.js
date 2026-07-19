@@ -1,12 +1,34 @@
 import * as AnimalModel from '../model/animal.model.js';
 import AppError from '../errors/AppError.js';
 
-export const getAllAnimals = async ({ page, limit, search }) => {
-  const { animals, total } = await AnimalModel.findAll({ page, limit, search });
+// FAIRE GESTION ERRURS
+export const getAllAnimals = async ({
+  page,
+  limit,
+  search,
+  speciesId,
+  breedId,
+  gender,
+  ageGroup,
+}) => {
+  const { animals, total } = await AnimalModel.findAll({
+    page,
+    limit,
+    search,
+    speciesId,
+    breedId,
+    gender,
+    ageGroup,
+  });
+
   return {
     animals,
     total,
   };
+};
+
+export const getBreedsBySpecies = async speciesId => {
+  return await AnimalModel.findBySpecies(speciesId);
 };
 
 export const createAnimal = async data => {
