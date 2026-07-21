@@ -16,14 +16,8 @@ router.get(
   AnimalController.getAllAnimals
 );
 
-router.get(
-  '/public',
-  AnimalController.getAllAnimals
-);
-router.get(
-  '/public/breeds',
-  AnimalController.getBreedsBySpecies
-);
+router.get('/public', AnimalController.getAllAnimals);
+router.get('/public/breeds', AnimalController.getBreedsBySpecies);
 
 router.patch(
   '/:id/status',
@@ -56,6 +50,7 @@ router.get(
   authorizeRoles('admin'),
   AnimalController.getAnimalById
 );
+router.get('/public/:id', AnimalController.getAnimalById);
 
 router.put(
   '/:id',

@@ -32,10 +32,10 @@ export const findAll = async ({
   if (ageGroup) {
     if (ageGroup === 'junior') {
       whereClause += ` AND animals.age < ?`;
-      queryParams.push(2); 
+      queryParams.push(2);
     } else if (ageGroup === 'adult') {
       whereClause += ` AND animals.age >= ? AND animals.age <= ?`;
-      queryParams.push(2, 7); 
+      queryParams.push(2, 7);
     } else if (ageGroup === 'senior') {
       whereClause += ` AND animals.age > ?`;
       queryParams.push(7);
@@ -73,7 +73,7 @@ export const findAll = async ({
   };
 };
 
-export const findBySpecies = async (speciesId) => {
+export const findBySpecies = async speciesId => {
   let sql = `SELECT id, name FROM breeds`;
   const params = [];
 
@@ -90,7 +90,11 @@ export const findBySpecies = async (speciesId) => {
 
 export const findById = async id => {
   const [animalRows] = await pool.execute(
-    'SELECT * FROM animals WHERE id = ?',
+    `SELECT animals.*, species.name AS specie_name, breeds.name AS breed_name
+   FROM animals 
+    INNER JOIN breeds ON animals.id_breed = breeds.id
+    INNER JOIN species ON breeds.id_specie = species.id
+    WHERE animals.id = ?`,
     [id]
   );
 
