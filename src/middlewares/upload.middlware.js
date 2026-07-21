@@ -3,7 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import AppError from '../errors/AppError.js';
 
 cloudinary.config({
-  cloudinary_api_url: process.env.CLOUDINARY_URL 
+  cloudinary_api_url: process.env.CLOUDINARY_URL,
 });
 
 const storage = multer.memoryStorage(); //Multer garde temporairement le fichier puis l'envoi à cloudinary
