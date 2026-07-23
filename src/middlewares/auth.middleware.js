@@ -15,8 +15,8 @@ export const authenticate = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Stocke le payload décodé {id, email, role} dans req.user
     next();
-  } catch (error) {
+  } catch {
     // Si token est expiré ou corrompu, lance une erreur
-    throw new AppError('Session expirée ou token invalide', 401);
+    next (new AppError('Session expirée ou token invalide', 401));
   }
 };
