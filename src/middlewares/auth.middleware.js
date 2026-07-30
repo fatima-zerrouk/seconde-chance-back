@@ -17,6 +17,6 @@ export const authenticate = (req, res, next) => {
     next();
   } catch {
     // Si token est expiré ou corrompu, lance une erreur
-    next (new AppError('Session expirée ou token invalide', 401));
+    next(new AppError('Session expirée ou token invalide', 401));
   }
 };
