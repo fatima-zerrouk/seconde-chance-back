@@ -1,7 +1,7 @@
 import AppError from '../errors/AppError.js';
 
 // errorHandler reçoit les erreurs personnalisées ou non et les renvoie
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       message: err.message,
